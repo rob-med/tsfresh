@@ -1666,7 +1666,7 @@ def high_low_stats(x, param):
           elif  p["attr"]=="max_high":
             f = np.max(intervals)
           elif  p["attr"]=="perc_high":
-            f = (len(intervals)+1)/l       
+            f = (len((x > threshold).nonzero()))/l       
        else:
           intervals = np.diff((x > threshold).nonzero()[0])
           intervals = intervals[intervals>1]
@@ -1677,7 +1677,7 @@ def high_low_stats(x, param):
           elif  p["attr"]=="max_low":
             f = np.max(intervals)
           elif  p["attr"]=="perc_low":
-            f = (len(intervals)+1)/l  
+            f = (len((x < threshold).nonzero()))/l  
        tuples.append(("t_{}__attr_{}".format(p["t"], p["attr"]),f))
          
     # s is a function that serializes the config

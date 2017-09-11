@@ -1635,3 +1635,48 @@ def energy_ratio_by_chunks(x, param):
         res_index.append("num_segments_{}__segment_focus_{}".format(num_segments, segment_focus))
 
     return list(zip(res_index, res_data)) # Materialize as list for Python 3 compatibility with name handling
+
+@set_property("fctype", "combiner")
+def high_low_stats(x, param):
+    """
+    Description of your feature
+
+    :param x: the time series to calculate the feature of
+    :type x: pandas.Series
+    :param c: the time series name
+    :type c: str
+    :param param: contains dictionaries {"p1": x, "p2": y, ...} with p1 float, p2 int ...
+    :type param: list
+    :return: list of tuples (s, f) where s are the parameters, serialized as a string, and f the respective feature
+        value as bool, int or float
+    :return type: pandas.Series
+    """
+    features = []
+    for p in params:
+       threshold = p["t"]
+       l = len(x)
+
+       intervals = np.diff((x < threshold).nonzero()[0])
+       intervals = intervals[intervals>1]
+       mean_high = intervals.mean()
+       min_high = np.min(intervals)
+       max_high = np.max(intervals)
+       perc_high = (len(intervals)+1)/l
+       intervals = np.diff((x > threshold).nonzero()[0])
+       intervals = intervals[intervals>1]
+       mean_low = intervals.mean()
+       min_low = np.min(intervals)
+       max_low = np.max(intervals)
+       perc_low = (len(intervals)+1)/l
+         
+       features.append([mean_high, min_high, max_high, perc_high, mean_low, min_low, max_low, perc_low])
+
+      
+     
+
+    indices = ["t_{}".format(q["t"]) for q in params]
+      
+    # s is a function that serializes the config
+    # f is a function that calculates the feature value for the config
+    return zip(indices, features)
+

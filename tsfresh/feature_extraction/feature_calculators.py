@@ -1674,7 +1674,7 @@ def high_low_stats(x, param):
       
      
 
-    indices = ["t_{}".format(q["t"]) for q in params]
+    indices = ["t_{}".format(q["t"]) for q in param]
       
     # s is a function that serializes the config
     # f is a function that calculates the feature value for the config

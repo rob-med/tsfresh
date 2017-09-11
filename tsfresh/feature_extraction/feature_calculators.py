@@ -1652,7 +1652,7 @@ def high_low_stats(x, param):
     :return type: pandas.Series
     """
     features = []
-    for p in params:
+    for p in param:
        threshold = p["t"]
        l = len(x)
 

@@ -1651,32 +1651,36 @@ def high_low_stats(x, param):
         value as bool, int or float
     :return type: pandas.Series
     """
-    features = []
+    tuples = []
     for p in param:
        threshold = p["t"]
        l = len(x)
-
-       intervals = np.diff((x < threshold).nonzero()[0])
-       intervals = intervals[intervals>1]
-       mean_high = intervals.mean()
-       min_high = np.min(intervals)
-       max_high = np.max(intervals)
-       perc_high = (len(intervals)+1)/l
-       intervals = np.diff((x > threshold).nonzero()[0])
-       intervals = intervals[intervals>1]
-       mean_low = intervals.mean()
-       min_low = np.min(intervals)
-       max_low = np.max(intervals)
-       perc_low = (len(intervals)+1)/l
+       if "high" in p["attr"]:
+          intervals = np.diff((x < threshold).nonzero()[0])
+          intervals = intervals[intervals>1]
+      
+          if p["attr"]=="mean_high":
+            f = intervals.mean()
+          elif  p["attr"]=="min_high":
+            f = np.min(intervals)
+          elif  p["attr"]=="max_high":
+            f = np.max(intervals)
+          elif  p["attr"]=="perc_high":
+            f = (len(intervals)+1)/l       
+       else:
+          intervals = np.diff((x > threshold).nonzero()[0])
+          intervals = intervals[intervals>1]
+          if p["attr"]=="mean_low":
+            f = intervals.mean()
+          elif  p["attr"]=="min_low":
+            f = np.min(intervals)
+          elif  p["attr"]=="max_low":
+            f = np.max(intervals)
+          elif  p["attr"]=="perc_low":
+            f = (len(intervals)+1)/l  
+       tuples.append(("t_{}__attr_{}".format(p["t"], p["attr"]),f))
          
-       features.append([mean_high, min_high, max_high, perc_high, mean_low, min_low, max_low, perc_low])
-
-      
-     
-
-    indices = ["t_{}".format(q["t"]) for q in param]
-      
     # s is a function that serializes the config
     # f is a function that calculates the feature value for the config
-    return zip(indices, features)
+    return tuples
 
